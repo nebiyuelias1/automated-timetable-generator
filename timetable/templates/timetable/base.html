@@ -63,7 +63,7 @@
 
             <a
               href="/sections"
-              class="{% if request.resolver_match.url_name|startswith:'sections' %} 
+              class="{% if request.resolver_match.route|startswith:'sections' %} 
               router-link-active router-link-exact-active bg-gray-600 bg-opacity-25 text-gray-100 border-gray-100 
               {% else %} 
               border-gray-900 text-gray-500 hover:bg-gray-600 hover:bg-opacity-25 hover:text-gray-100 
@@ -76,7 +76,7 @@
 
             <a
               href="/instructors"
-              class="{% if request.resolver_match.url_name == 'instructors' %} 
+              class="{% if request.resolver_match.route|startswith:'instructors' %} 
               router-link-active router-link-exact-active bg-gray-600 bg-opacity-25 text-gray-100 border-gray-100 
               {% else %} 
               border-gray-900 text-gray-500 hover:bg-gray-600 hover:bg-opacity-25 hover:text-gray-100 

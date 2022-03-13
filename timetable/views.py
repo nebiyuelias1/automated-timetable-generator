@@ -3,7 +3,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic import ListView
 
-from timetable.models import Class, Room, Section
+from timetable.models import Class, Instructor, Room, Section
 
 # Create your views here.
 def index(request):
@@ -90,3 +90,26 @@ class SectionUpdateView(UpdateView):
     
     def get_success_url(self):
         return reverse('sections')
+    
+class InstructorListView(ListView):
+    model = Instructor
+    paginate_by = 10
+    
+class InstructorCreateView(CreateView):
+    model = Instructor
+    fields = ['name']
+    
+    def get_success_url(self):
+        return reverse('instructors')
+
+class InstructorDeleteView(DeleteView):
+    model = Instructor
+    success_url = reverse_lazy('instructors')
+    
+class InstructorUpdateView(UpdateView):
+    model = Instructor
+    fields = ['name']
+    template_name_suffix = '_form'
+    
+    def get_success_url(self):
+        return reverse('instructors')
