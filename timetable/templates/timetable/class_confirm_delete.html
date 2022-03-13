@@ -1,0 +1,11 @@
+{% extends 'timetable/base.html' %} 
+
+{% block main %}
+<h1 class="text-xl font-bold">Delete Class?</h1>
+
+<form method="post">{% csrf_token %}
+    <p>Are you sure you want to delete "{{ object }}"?</p>
+    <input type="submit" value="Confirm">
+</form>
+{% endblock main %}
+
