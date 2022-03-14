@@ -16,24 +16,38 @@ class Instructor(models.Model):
     
     def __str__(self) -> str:
         return self.name
+
+class Grade(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    level = models.IntegerField()
+    
+    def __str__(self) -> str:
+        return f'G-{self.level}'
     
 class Subject(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
     name = models.CharField(max_length=500)
     
-    instructors = models.ManyToManyField(Instructor, related_name='subjects')
+    grade = models.ForeignKey(Grade, related_name='subjects', blank=False, null=False, on_delete=models.CASCADE)
+    
+    instructor = models.ForeignKey(Instructor, related_name='subjects', blank=True, null=True, on_delete=models.CASCADE)
     
     def __str__(self) -> str:
         return self.name
+
+
     
 class Section(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
     name = models.CharField(max_length=500)
     
+    grade = models.ForeignKey(Grade, related_name='sections', null=False, blank=False, on_delete=models.CASCADE)
+    
     def __str__(self) -> str:
-        return self.name
+        return f'Grade: {self.grade} Section: {self.name}'
     
 
 
