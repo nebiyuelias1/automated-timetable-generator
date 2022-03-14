@@ -1,7 +1,7 @@
 {% extends 'timetable/base.html' %}
 
 {% block main %}
-<h1 class="text-xl font-bold">Enter Class Details</h1>
+<h1 class="text-xl font-bold">Enter Subject Details</h1>
 <form method="post">{% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Save">

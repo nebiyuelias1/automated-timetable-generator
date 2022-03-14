@@ -1,38 +1,41 @@
 {% extends 'timetable/base.html' %}
 
 {% block main %}
-<h1 class="text-xl font-bold">Classes</h1>
+<h1 class="text-xl font-bold">Subjects</h1>
 
-<button onclick="location.href = '/classes/create'" type="button"
+<button onclick="location.href = '/subjects/create'" type="button"
     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-    Add Class
+    Add Subject
 </button>
 
-{% for class in object_list %}
+{% if object_list %}
 
 <table class="border-collapse border border-slate-400 table-auto">
     <thead>
         <tr>
-            <th class="border border-slate-300 font-medium p-4">Class Name</th>
+            <th class="border border-slate-300 font-medium p-4">Subject Name</th>
             <th class="border border-slate-300 font-medium p-4"></th>
             <th class="border border-slate-300 font-medium p-4"></th>
         </tr>
     </thead>
     <tbody>
+        {% for subject in object_list %}
+
         <tr>
-            <td class="border border-slate-300 p-4">{{class.name}}</td>
+            <td class="border border-slate-300 p-4">{{subject.name}}</td>
             <td class="border border-slate-300 p-4">
-                <a class="text-blue-600 hover:underline" href="/classes/edit/{{class.pk}}">Edit</a>
+                <a class="text-blue-600 hover:underline" href="/subjects/edit/{{subject.pk}}">Edit</a>
             </td>
             <td class="border border-slate-300 p-4">
-                <a class="text-red-600 hover:underline" href="/classes/delete/{{class.pk}}">Delete</a>
+                <a class="text-red-600 hover:underline" href="/subjects/delete/{{subject.pk}}">Delete</a>
             </td>
         </tr>
+        {% endfor %}
     </tbody>
 </table>
 
-{% empty %}
-    <div>No classes yet.</div>
-{% endfor %}
+{% else %}
+    <div>No subjects yet.</div>
+{% endif %}
 
 {% endblock main %}
