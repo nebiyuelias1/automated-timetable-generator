@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic import ListView
+from timetable.forms import SectionForm, SubjectForm
 
 from timetable.models import Subject, Instructor, Room, Section
 
@@ -51,8 +52,8 @@ class SubjectListView(ListView):
     
 class SubjectCreateView(CreateView):
     model = Subject
-    fields = ['name']
-    
+    form_class = SubjectForm
+        
     def get_success_url(self):
         return reverse('subjects')
 
@@ -62,7 +63,7 @@ class SubjectDeleteView(DeleteView):
     
 class SubjectUpdateView(UpdateView):
     model = Subject
-    fields = ['name']
+    form_class = SubjectForm
     template_name_suffix = '_form'
     
     def get_success_url(self):
@@ -74,7 +75,8 @@ class SectionListView(ListView):
     
 class SectionCreateView(CreateView):
     model = Section
-    fields = ['name']
+    form_class = SectionForm
+
     
     def get_success_url(self):
         return reverse('sections')
@@ -85,7 +87,7 @@ class SectionDeleteView(DeleteView):
     
 class SectionUpdateView(UpdateView):
     model = Section
-    fields = ['name']
+    form_class = SectionForm
     template_name_suffix = '_form'
     
     def get_success_url(self):
