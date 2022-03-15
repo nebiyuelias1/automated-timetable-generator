@@ -8,16 +8,13 @@ from timetable.models import Subject, Instructor, Room, Section
 
 # Create your views here.
 def index(request):
-    return render(request, 'timetable/index.html')
-
-def sections(request):
-    return render(request, 'timetable/sections.html')
-
-def classes(request):
-    return render(request, 'timetable/classes.html')
-
-def instructors(request):
-    return render(request, 'timetable/instructors.html')
+    context = {
+        'subject_count': Subject.objects.count(),
+        'room_count': Room.objects.count(),
+        'section_count': Section.objects.count(),
+        'instructor_count': Instructor.objects.count()
+    }
+    return render(request, 'timetable/index.html', context)
 
 def settings(request):
     return render(request, 'timetable/settings.html')
