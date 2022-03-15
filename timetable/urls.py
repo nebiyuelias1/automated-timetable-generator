@@ -1,5 +1,5 @@
 from django.urls import path
-from timetable.views import SubjectCreateView, SubjectDeleteView, SubjectListView, SubjectUpdateView, InstructorCreateView, InstructorDeleteView, InstructorListView, InstructorUpdateView, RoomCreateView, RoomDeleteView, RoomListView, RoomUpdateView, SectionCreateView, SectionDeleteView, SectionListView, SectionUpdateView, index, instructors, sections, settings
+from timetable.views import SubjectCreateView, SubjectDeleteView, SubjectListView, SubjectUpdateView, InstructorCreateView, InstructorDeleteView, InstructorListView, InstructorUpdateView, RoomCreateView, RoomDeleteView, RoomListView, RoomUpdateView, SectionCreateView, SectionDeleteView, SectionListView, SectionUpdateView, index, settings
 
 
 urlpatterns = [
