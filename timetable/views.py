@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic import ListView
-from timetable.forms import SectionForm, SubjectForm
+from timetable.forms import GradeForm, SectionForm, SubjectForm
 
-from timetable.models import Subject, Instructor, Room, Section
+from timetable.models import Grade, Subject, Instructor, Room, Section
 
 # Create your views here.
 def index(request):
@@ -19,6 +19,29 @@ def index(request):
 def settings(request):
     return render(request, 'timetable/settings.html')
 
+class GradeListView(ListView):
+    model = Grade
+    paginate_by = 10
+    
+class GradeCreateView(CreateView):
+    model = Grade
+    form_class = GradeForm
+    
+    def get_success_url(self):
+        return reverse('grades')
+
+class GradeDeleteView(DeleteView):
+    model = Grade
+    success_url = reverse_lazy('grades')
+    
+class GradeUpdateView(UpdateView):
+    model = Grade
+    form_class = GradeForm
+    template_name_suffix = '_form'
+    
+    def get_success_url(self):
+        return reverse('grades')
+    
 class RoomListView(ListView):
     model = Room
     paginate_by = 10

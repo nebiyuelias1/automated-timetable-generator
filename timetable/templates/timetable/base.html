@@ -29,11 +29,19 @@
         </div>
 
         <nav class="mt-10">
-          <a href="/subjects" class="{% if request.resolver_match.route|startswith:'subjects' %} 
+          <a href="/grades" class="{% if request.resolver_match.route|startswith:'grades' %} 
               router-link-active router-link-exact-active bg-gray-600 bg-opacity-25 text-gray-100 border-gray-100 
               {% else %} border-gray-900 text-gray-500 hover:bg-gray-600 hover:bg-opacity-25 hover:text-gray-100 
               {% endif %} flex items-center px-6 py-2 mt-4 duration-200 border-l-4" aria-current="page">
             <span class="w-5 h-5 material-icons"> class </span>
+            <span class="mx-4">Grades</span>
+          </a>
+
+          <a href="/subjects" class="{% if request.resolver_match.route|startswith:'subjects' %} 
+              router-link-active router-link-exact-active bg-gray-600 bg-opacity-25 text-gray-100 border-gray-100 
+              {% else %} border-gray-900 text-gray-500 hover:bg-gray-600 hover:bg-opacity-25 hover:text-gray-100 
+              {% endif %} flex items-center px-6 py-2 mt-4 duration-200 border-l-4" aria-current="page">
+            <span class="w-5 h-5 material-icons"> science </span>
             <span class="mx-4">Subjects</span>
           </a>
 
