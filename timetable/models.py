@@ -45,6 +45,8 @@ class Section(models.Model):
     
     grade = models.ForeignKey(Grade, related_name='sections', null=False, blank=False, on_delete=models.CASCADE)
     
+    room = models.ForeignKey(Room, related_name='sections', null=False, blank=False, on_delete=models.CASCADE)
+    
     def __str__(self) -> str:
         return f'Grade: {self.grade} Section: {self.name}'
     

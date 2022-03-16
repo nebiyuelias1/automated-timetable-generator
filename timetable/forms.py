@@ -9,7 +9,7 @@ class GradeForm(ModelForm):
 class SectionForm(ModelForm):
     class Meta:
         model = Section
-        fields = ['name', 'grade']
+        fields = ['name', 'grade', 'room']
         
 class SubjectForm(ModelForm):
     class Meta:
