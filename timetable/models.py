@@ -62,5 +62,21 @@ class ScheduleEntry(models.Model):
     
     schedule = models.ForeignKey(Schedule, related_name='entries', null=False, blank=False, on_delete=models.CASCADE)
     
+class Setting(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    start_time = models.TimeField()
+    
+    end_time = models.TimeField()
+    
+    lunch_start_time = models.TimeField()
+    
+    lunch_end_time = models.TimeField()
+    
+    period_length = models.DurationField()
+    
+    period_count = models.IntegerField()
+
+    
 
 

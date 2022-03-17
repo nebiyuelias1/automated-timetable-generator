@@ -4,7 +4,7 @@ from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic import ListView
 from timetable.forms import GradeForm, SectionForm, SettingForm, SubjectForm
 
-from timetable.models import Grade, Subject, Instructor, Room, Section
+from timetable.models import Grade, Setting, Subject, Instructor, Room, Section
 
 # Create your views here.
 def index(request):
@@ -17,6 +17,17 @@ def index(request):
     return render(request, 'timetable/index.html', context)
 
 def settings(request):
+    setting = Setting.objects.all().first()
+    if setting:
+        return render(request, 'timetable/setting_display.html', {'setting': setting})
+    
+    form = SettingForm()
+    if request.method == 'POST':
+        form = SettingForm(request.POST)
+        if form.is_valid():
+            setting = Setting.objects.create(**form.cleaned_data)
+            return render(request, 'timetable/setting_display.html', {'setting': setting})
+        
     form = SettingForm()
     return render(request, 'timetable/setting_form.html', {'form': form})
 

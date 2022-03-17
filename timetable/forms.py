@@ -1,6 +1,6 @@
 import datetime
 from typing import Any, Mapping, Optional
-from django.forms import DurationField, Form, ModelForm, TimeField, TimeInput, ValidationError
+from django.forms import DurationField, Form, HiddenInput, IntegerField, ModelForm, TimeField, TimeInput, ValidationError
 from durationwidget.widgets import TimeDurationWidget
 
 
@@ -26,12 +26,14 @@ class SubjectForm(ModelForm):
 
 
 class SettingForm(Form):
-    class_start_time = TimeField(widget=TimeInput(attrs={'type': 'time'}))
+    start_time = TimeField(widget=TimeInput(attrs={'type': 'time'}))
 
-    class_end_time = TimeField(widget=TimeInput(attrs={'type': 'time'}))
+    end_time = TimeField(widget=TimeInput(attrs={'type': 'time'}))
 
     period_length = DurationField(widget=TimeDurationWidget(
         show_days=False, show_hours=False,  show_seconds=False))
+    
+    period_count = IntegerField(widget=HiddenInput(), required=False)
 
     lunch_start_time = TimeField(widget=TimeInput(attrs={'type': 'time'}))
 
@@ -39,10 +41,10 @@ class SettingForm(Form):
 
     def clean(self) -> Optional[Mapping[str, Any]]:
         cleaned_data = super().clean()
-        start_time = cleaned_data.get('class_start_time')
-        end_time = cleaned_data.get('class_end_time')
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
         if start_time >= end_time:
-            self.add_error('class_end_time',
+            self.add_error('end_time',
                            'End time must be after start time.')
 
         lunch_start_time = cleaned_data.get('lunch_start_time')
@@ -60,7 +62,7 @@ class SettingForm(Form):
         if number_of_periods != int(number_of_periods):
             raise ValidationError(
                 'It\'s not possible to have equally spaced periods with current configuration. Please adjust!', code='invalid')
-
+        cleaned_data['period_count'] = number_of_periods
         return cleaned_data
 
     def _get_duration_in_seconds(self, start_time, end_time):
