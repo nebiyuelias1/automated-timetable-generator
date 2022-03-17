@@ -6,8 +6,10 @@ name = "pypi"
 [packages]
 django = "*"
 django-tailwind = "*"
+django-durationwidget = "*"
 
 [dev-packages]
+autopep8 = "*"
 
 [requires]
 python_version = "3.8"
