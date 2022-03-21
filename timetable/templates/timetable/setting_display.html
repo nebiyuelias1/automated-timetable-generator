@@ -3,4 +3,29 @@
 {% block main %}
 <h1 class="text-xl font-bold">Settings</h1>
 
+<button onclick="location.href = '/settings/edit'" type="button"
+    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+    Edit
+</button>
+
+<ul class="list-disc">
+    <li>
+        <strong>Class Start Time:</strong> {{setting.start_time}}
+    </li>
+    <li>
+        <strong>Class End Time:</strong> {{setting.end_time}}
+    </li>
+    <li>
+        <strong>Period Duration:</strong> {{setting.period_length}}
+    </li>
+    <li>
+        <strong>Period Count Per Day:</strong> {{setting.period_count}}
+    </li>
+    <li>
+        <strong>Lunch Break Start Time:</strong> {{setting.lunch_start_time}}
+    </li>
+    <li>
+        <strong>Lunch Break End Time:</strong> {{setting.lunch_end_time}}
+    </li>
+</ul>
 {% endblock main %}

@@ -4,7 +4,7 @@ from django.forms import DurationField, Form, HiddenInput, IntegerField, ModelFo
 from durationwidget.widgets import TimeDurationWidget
 
 
-from timetable.models import Grade, Section, Subject
+from timetable.models import Grade, Section, Setting, Subject
 
 
 class GradeForm(ModelForm):
@@ -71,3 +71,8 @@ class SettingForm(Form):
         end_time = datetime.datetime.combine(
             datetime.date(2022, 3, 17), end_time)
         return (end_time - start_time).total_seconds()
+
+class SettingModelForm(ModelForm):
+    class Meta:
+        model = Setting
+        fields = ['start_time', 'end_time', 'lunch_start_time', 'lunch_end_time']

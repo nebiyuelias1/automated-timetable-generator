@@ -1,7 +1,7 @@
 from django.urls import path
 from timetable.views import (GradeCreateView, GradeDeleteView, GradeListView, GradeUpdateView, SubjectCreateView, SubjectDeleteView, SubjectListView, SubjectUpdateView,
                              InstructorCreateView, InstructorDeleteView, InstructorListView, InstructorUpdateView, RoomCreateView, RoomDeleteView, RoomListView,
-                             RoomUpdateView, SectionCreateView, SectionDeleteView, SectionListView, SectionUpdateView, index, settings)
+                             RoomUpdateView, SectionCreateView, SectionDeleteView, SectionListView, SectionUpdateView, edit_setting, index, settings)
 
 
 urlpatterns = [
@@ -41,4 +41,5 @@ urlpatterns = [
          InstructorUpdateView.as_view(), name='edit-instructor'),
 
     path('settings/', settings, name='settings'),
+    path('settings/edit/', edit_setting, name='edit-setting')
 ]

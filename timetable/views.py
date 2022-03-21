@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.forms import ValidationError, models
+from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic import ListView
-from timetable.forms import GradeForm, SectionForm, SettingForm, SubjectForm
+from timetable.forms import GradeForm, SectionForm, SettingForm, SettingModelForm, SubjectForm
 
 from timetable.models import Grade, Setting, Subject, Instructor, Room, Section
 
@@ -30,6 +31,29 @@ def settings(request):
         
     form = SettingForm()
     return render(request, 'timetable/setting_form.html', {'form': form})
+
+def edit_setting(request):
+    setting = Setting.objects.all()
+    if request.method == 'POST':
+        form = SettingForm(request.POST)
+        if form.is_valid():
+            setting.update(**form.cleaned_data)
+        
+        return redirect(reverse('settings'))
+    
+    if setting.count() > 0:
+        setting = setting.first()
+        data = {
+            'start_time': str(setting.start_time),
+            'end_time': str(setting.end_time),
+            'lunch_start_time': str(setting.lunch_start_time),
+            'lunch_end_time': str(setting.lunch_end_time),
+            'period_length_0': setting.period_length.total_seconds() / 60,
+        }
+        form = SettingForm(data)
+        return render(request, 'timetable/setting_form.html', {'form': form})
+    
+    raise ValidationError('Nothing to edit!')
 
 class GradeListView(ListView):
     model = Grade
