@@ -10,9 +10,23 @@ class Room(models.Model):
         return self.name
 
 class Instructor(models.Model):
+    FLEXIBLE = 'FL'
+    MORNING = 'MR'
+    AFTERNOON = 'AF'
+    
+    FLEXIBILITY_OPTIONS = (
+        (FLEXIBLE, 'Flexible'),
+        (MORNING, 'Morning'),
+        (AFTERNOON, 'Afternoon')
+    )
+    
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
     name = models.CharField(max_length=500)
+    
+    availability = models.DurationField()
+    
+    flexibility = models.CharField(max_length=2, choices=FLEXIBILITY_OPTIONS, default=FLEXIBLE, null=False, blank=False)
     
     def __str__(self) -> str:
         return self.name

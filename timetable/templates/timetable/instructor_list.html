@@ -13,7 +13,8 @@
     <thead>
         <tr>
             <th class="border border-slate-300 font-medium p-4">Instructor Name</th>
-            <th class="border border-slate-300 font-medium p-4"></th>
+            <th class="border border-slate-300 font-medium p-4">Availability</th>
+            <th class="border border-slate-300 font-medium p-4">Flexibility</th>
             <th class="border border-slate-300 font-medium p-4"></th>
         </tr>
     </thead>
@@ -21,6 +22,8 @@
         {% for instructor in object_list %}
             <tr>
                 <td class="border border-slate-300 p-4">{{instructor.name}}</td>
+                <td class="border border-slate-300 p-4">{{instructor.availability}}</td>
+                <td class="border border-slate-300 p-4">{{instructor.get_flexibility_display}}</td>
                 <td class="border border-slate-300 p-4">
                     <a class="text-blue-600 hover:underline" href="/instructors/edit/{{instructor.pk}}">Edit</a>
                 </td>

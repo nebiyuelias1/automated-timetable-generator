@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic import ListView
-from timetable.forms import BreakForm, GradeForm, SectionForm, SettingForm, SubjectForm
+from timetable.forms import BreakForm, GradeForm, InstructorForm, SectionForm, SettingForm, SubjectForm
 
 from timetable.models import Grade, Setting, Subject, Instructor, Room, Section, Break
 from timetable.utils import get_duration_in_seconds
@@ -249,7 +249,7 @@ class InstructorListView(ListView):
 
 class InstructorCreateView(CreateView):
     model = Instructor
-    fields = ['name']
+    form_class = InstructorForm
 
     def get_success_url(self):
         return reverse('instructors')
@@ -262,7 +262,7 @@ class InstructorDeleteView(DeleteView):
 
 class InstructorUpdateView(UpdateView):
     model = Instructor
-    fields = ['name']
+    form_class = InstructorForm
     template_name_suffix = '_form'
 
     def get_success_url(self):

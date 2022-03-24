@@ -3,13 +3,27 @@ from django.forms import DurationField, Form, ModelForm, TimeField, TimeInput, V
 from durationwidget.widgets import TimeDurationWidget
 
 
-from timetable.models import Break, Grade, Section, Subject
+from timetable.models import Break, Grade, Instructor, Section, Subject
 
 
 class GradeForm(ModelForm):
     class Meta:
         model = Grade
         fields = ['level', ]
+
+
+class InstructorForm(ModelForm):
+    class Meta:
+        model = Instructor
+        fields = ('name', 'availability', 'flexibility', )
+        widgets = {
+            'availability': TimeDurationWidget(
+                show_days=False,
+                show_hours=True,
+                show_minutes=False,
+                show_seconds=False,
+            ),
+        }
 
 
 class SectionForm(ModelForm):
@@ -51,7 +65,6 @@ class SettingForm(Form):
     period_length = DurationField(widget=TimeDurationWidget(
         show_days=False, show_hours=False,  show_seconds=False))
 
-
     lunch_start_time = TimeField(widget=TimeInput(attrs={'type': 'time'}))
 
     lunch_end_time = TimeField(widget=TimeInput(attrs={'type': 'time'}))
@@ -71,5 +84,3 @@ class SettingForm(Form):
                            'Lunch end time must be after start time.')
 
         return cleaned_data
-
-    
