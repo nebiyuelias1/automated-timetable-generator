@@ -19,7 +19,10 @@
         <strong>Period Duration:</strong> {{setting.period_length}}
     </li>
     <li>
-        <strong>Period Count Per Day:</strong> {{setting.period_count}}
+        <strong>Period Count Before Lunch:</strong> {{setting.before_lunch_period_count}}
+    </li>
+    <li>
+        <strong>Period Count After Lunch:</strong> {{setting.after_lunch_period_count}}
     </li>
     <li>
         <strong>Lunch Break Start Time:</strong> {{setting.lunch_start_time}}
@@ -27,5 +30,10 @@
     <li>
         <strong>Lunch Break End Time:</strong> {{setting.lunch_end_time}}
     </li>
+    {% for break in setting.breaks.all %}
+    <h2>Break {{forloop.counter}}:</h2>
+    <li>Start Time: {{break.start_time}}</li>
+    <li>End Time Time: {{break.end_time}}</li>
+    {% endfor %}
 </ul>
 {% endblock main %}

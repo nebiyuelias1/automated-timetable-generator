@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+
 class Room(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
@@ -51,11 +52,15 @@ class Section(models.Model):
         return f'Grade: {self.grade} Section: {self.name}'
     
 class Schedule(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    
     section = models.ForeignKey(Section, related_name='schedule', blank=False, null=False, on_delete=models.CASCADE)
     
     created_at = models.DateTimeField(auto_now_add=True)
     
 class ScheduleEntry(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    
     day = models.IntegerField()
     
     period = models.IntegerField()
@@ -75,7 +80,18 @@ class Setting(models.Model):
     
     period_length = models.DurationField()
     
-    period_count = models.IntegerField()
+    before_lunch_period_count = models.IntegerField()
+    
+    after_lunch_period_count = models.IntegerField()
+    
+class Break(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    
+    start_time = models.TimeField()
+    
+    end_time = models.TimeField()
+    
+    setting = models.ForeignKey(Setting, null=False, blank=False, on_delete=models.CASCADE, related_name='breaks')
 
     
 

@@ -1,10 +1,9 @@
-import datetime
 from typing import Any, Mapping, Optional
-from django.forms import DurationField, Form, HiddenInput, IntegerField, ModelForm, TimeField, TimeInput, ValidationError
+from django.forms import DurationField, Form, ModelForm, TimeField, TimeInput, ValidationError
 from durationwidget.widgets import TimeDurationWidget
 
 
-from timetable.models import Grade, Section, Setting, Subject
+from timetable.models import Break, Grade, Section, Subject
 
 
 class GradeForm(ModelForm):
@@ -25,6 +24,25 @@ class SubjectForm(ModelForm):
         fields = ['name', 'grade', 'instructor']
 
 
+class BreakForm(ModelForm):
+    class Meta:
+        fields = ['start_time', 'end_time']
+        model = Break
+        widgets = {
+            'start_time': TimeInput(attrs={'type': 'time'}),
+            'end_time': TimeInput(attrs={'type': 'time'})
+        }
+
+    def clean(self) -> Optional[Mapping[str, Any]]:
+        cleaned_data = super().clean()
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+        if start_time >= end_time:
+            raise ValidationError(
+                'End time must be after start time.', code='invalid')
+        return cleaned_data
+
+
 class SettingForm(Form):
     start_time = TimeField(widget=TimeInput(attrs={'type': 'time'}))
 
@@ -32,8 +50,7 @@ class SettingForm(Form):
 
     period_length = DurationField(widget=TimeDurationWidget(
         show_days=False, show_hours=False,  show_seconds=False))
-    
-    period_count = IntegerField(widget=HiddenInput(), required=False)
+
 
     lunch_start_time = TimeField(widget=TimeInput(attrs={'type': 'time'}))
 
@@ -53,26 +70,6 @@ class SettingForm(Form):
             self.add_error('lunch_end_time',
                            'Lunch end time must be after start time.')
 
-        day_duration = self._get_duration_in_seconds(start_time, end_time)
-        lunch_duration = self._get_duration_in_seconds(
-            lunch_start_time, lunch_end_time)
-        class_duration = day_duration - lunch_duration
-        period_length = cleaned_data.get('period_length').total_seconds()
-        number_of_periods = class_duration / period_length
-        if number_of_periods != int(number_of_periods):
-            raise ValidationError(
-                'It\'s not possible to have equally spaced periods with current configuration. Please adjust!', code='invalid')
-        cleaned_data['period_count'] = number_of_periods
         return cleaned_data
 
-    def _get_duration_in_seconds(self, start_time, end_time):
-        start_time = datetime.datetime.combine(
-            datetime.date(2022, 3, 17), start_time)
-        end_time = datetime.datetime.combine(
-            datetime.date(2022, 3, 17), end_time)
-        return (end_time - start_time).total_seconds()
-
-class SettingModelForm(ModelForm):
-    class Meta:
-        model = Setting
-        fields = ['start_time', 'end_time', 'lunch_start_time', 'lunch_end_time']
+    
