@@ -38,7 +38,7 @@ class SectionForm(ModelForm):
 class SubjectForm(ModelForm):
     class Meta:
         model = Subject
-        fields = ['name', 'grade', ]
+        fields = ['name', 'grade', 'number_of_occurrences', ]
 
 
 class BreakForm(ModelForm):

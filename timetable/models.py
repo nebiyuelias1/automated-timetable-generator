@@ -26,6 +26,8 @@ class Subject(models.Model):
 
     grade = models.ForeignKey(Grade, related_name='subjects',
                               blank=False, null=False, on_delete=models.CASCADE)
+    
+    number_of_occurrences = models.IntegerField()
 
     def __str__(self) -> str:
         return self.name

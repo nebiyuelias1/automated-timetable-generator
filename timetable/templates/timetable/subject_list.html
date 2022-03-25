@@ -16,7 +16,7 @@
             <th class="border border-slate-300 font-medium p-4">Subject</th>
             <th class="border border-slate-300 font-medium p-4">Grade</th>
             <th class="border border-slate-300 font-medium p-4">Instructor</th>
-            <th class="border border-slate-300 font-medium p-4">  </th>
+            <th class="border border-slate-300 font-medium p-4"> </th>
         </tr>
     </thead>
     <tbody>
@@ -25,7 +25,13 @@
         <tr>
             <td class="border border-slate-300 p-4">{{subject.name}}</td>
             <td class="border border-slate-300 p-4">{{subject.grade}}</td>
-            <td class="border border-slate-300 p-4">{{subject.instructor}}</td>
+            <td class="border border-slate-300 p-4">
+                <ul>
+                    {% for ins in subject.instructors.all %}
+                    <li>{{ins}}</li>
+                    {% endfor %}
+                </ul>
+            </td>
             <td class="border border-slate-300 p-4">
                 <a class="text-blue-600 hover:underline" href="/subjects/edit/{{subject.pk}}">Edit</a>
             </td>
@@ -38,7 +44,7 @@
 </table>
 
 {% else %}
-    <div>No subjects yet.</div>
+<div>No subjects yet.</div>
 {% endif %}
 
 {% endblock main %}
