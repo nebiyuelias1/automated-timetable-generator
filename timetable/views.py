@@ -86,6 +86,10 @@ def settings(request):
     form = SettingForm()
     return render(request, 'timetable/setting_form.html', {'form': form, 'break_count': break_count + 1, 'break_form_set': BreakFormSet(), })
 
+def subjects_in_grade(request, pk):
+    subjects = Subject.objects.filter(grade=pk)
+    
+    return render(request, 'timetable/subjects_drop_down_list_options.html', {'subjects': subjects})
 
 def edit_setting(request):
     setting_queryset = Setting.objects.all()

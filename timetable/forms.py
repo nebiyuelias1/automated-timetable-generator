@@ -1,5 +1,5 @@
 from typing import Any, Mapping, Optional
-from django.forms import DurationField, Form, ModelForm, TimeField, TimeInput, ValidationError
+from django.forms import DurationField, Form, ModelChoiceField, ModelForm, ModelMultipleChoiceField, MultipleChoiceField, TimeField, TimeInput, ValidationError
 from durationwidget.widgets import TimeDurationWidget
 
 
@@ -9,13 +9,16 @@ from timetable.models import Break, Grade, Instructor, Section, Subject
 class GradeForm(ModelForm):
     class Meta:
         model = Grade
-        fields = ['level', ]
+        fields = ('level', )
 
 
 class InstructorForm(ModelForm):
+    grade = ModelChoiceField(queryset=Grade.objects.all())
+    subjects = ModelMultipleChoiceField(queryset=Subject.objects.all())
+    
     class Meta:
         model = Instructor
-        fields = ('name', 'availability', 'flexibility', )
+        fields = ('name', 'availability', 'flexibility', 'subjects')
         widgets = {
             'availability': TimeDurationWidget(
                 show_days=False,
@@ -35,7 +38,7 @@ class SectionForm(ModelForm):
 class SubjectForm(ModelForm):
     class Meta:
         model = Subject
-        fields = ['name', 'grade', 'instructor']
+        fields = ['name', 'grade', ]
 
 
 class BreakForm(ModelForm):

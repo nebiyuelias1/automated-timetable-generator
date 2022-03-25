@@ -6,4 +6,20 @@
     {{ form.as_p }}
     <input type="submit" value="Save">
 </form>
+<script>
+    const gradeDropdown = document.querySelector('#id_grade');
+    const subjectDropdown = document.querySelector('#id_subjects');
+
+    gradeDropdown.addEventListener('change', (_) => {
+        if (gradeDropdown.value) {
+            fetch(`/ajax/grades/${gradeDropdown.value}/subjects/`)
+                .then(response => response.text())
+                .then(data => {
+                    subjectDropdown.innerHTML = data;
+                });
+        } else {
+            subjectDropdown.innerHTML = '';
+        }
+    });
+</script>
 {% endblock main %}

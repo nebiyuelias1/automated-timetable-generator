@@ -1,7 +1,8 @@
+from unicodedata import name
 from django.urls import path
 from timetable.views import (GradeCreateView, GradeDeleteView, GradeListView, GradeUpdateView, SubjectCreateView, SubjectDeleteView, SubjectListView, SubjectUpdateView,
                              InstructorCreateView, InstructorDeleteView, InstructorListView, InstructorUpdateView, RoomCreateView, RoomDeleteView, RoomListView,
-                             RoomUpdateView, SectionCreateView, SectionDeleteView, SectionListView, SectionUpdateView, edit_setting, index, settings)
+                             RoomUpdateView, SectionCreateView, SectionDeleteView, SectionListView, SectionUpdateView, edit_setting, index, settings, subjects_in_grade)
 
 
 urlpatterns = [
@@ -12,6 +13,7 @@ urlpatterns = [
     path('grades/delete/<uuid:pk>/',
          GradeDeleteView.as_view(), name='delete-grade'),
     path('grades/edit/<uuid:pk>/', GradeUpdateView.as_view(), name='edit-grade'),
+    path('ajax/grades/<uuid:pk>/subjects/', subjects_in_grade, name='subjects-in-grade'),
 
     path('rooms/', RoomListView.as_view(), name='rooms'),
     path('rooms/create/', RoomCreateView.as_view(), name='create_room'),
