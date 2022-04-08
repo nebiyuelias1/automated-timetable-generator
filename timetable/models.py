@@ -19,6 +19,7 @@ class Grade(models.Model):
     def __str__(self) -> str:
         return f'G-{self.level}'
 
+
 class Subject(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
@@ -26,12 +27,12 @@ class Subject(models.Model):
 
     grade = models.ForeignKey(Grade, related_name='subjects',
                               blank=False, null=False, on_delete=models.CASCADE)
-    
+
     number_of_occurrences = models.IntegerField()
 
     def __str__(self) -> str:
         return self.name
-    
+
 
 class Instructor(models.Model):
     FLEXIBLE = 'FL'
@@ -61,6 +62,7 @@ class Instructor(models.Model):
     def __str__(self) -> str:
         return self.name
 
+
 class Section(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
@@ -83,6 +85,38 @@ class Schedule(models.Model):
         Section, related_name='schedule', blank=False, null=False, on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.__entries = []
+        self.__fitness = 1
+    
+    @property
+    def fitness(self):
+        return self.__fitness
+        
+
+    def add_schedule_entry(self, day, period, subject):
+        self.__entries.append(ScheduleEntry(
+            schedule=self, day=day, period=period, subject=subject))
+        
+    def save_schedule_entries(self):
+        ScheduleEntry.objects.bulk_create(self.__entries)
+
+    def calculate_fitness(self):
+        num_of_conflicts = 0
+        for entry in self.__entries:
+            instructor_id = entry.subject.instructors.first().id
+
+            instructor_conflict_exists = ScheduleEntry.objects.filter(
+                day=entry.day, period=entry.period, subject__instructors__in=[instructor_id]).exists()
+            
+            if instructor_conflict_exists:
+                num_of_conflicts += 1
+                
+        self.__fitness = 1 / (num_of_conflicts + 1)
+                
+        
 
 
 class ScheduleEntry(models.Model):
@@ -94,6 +128,9 @@ class ScheduleEntry(models.Model):
 
     schedule = models.ForeignKey(
         Schedule, related_name='entries', null=False, blank=False, on_delete=models.CASCADE)
+
+    subject = models.ForeignKey(
+        Subject, related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
 
 
 class Setting(models.Model):
