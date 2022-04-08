@@ -1,12 +1,14 @@
+from urllib import response
 from django.forms import ValidationError, formset_factory
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic import ListView
+from requests import Response
 from timetable.forms import BreakForm, GradeForm, InstructorForm, SectionForm, SettingForm, SubjectForm
 
-from timetable.models import Grade, Setting, Subject, Instructor, Room, Section, Break
-from timetable.utils import get_duration_in_seconds
+from timetable.models import Grade, Schedule, Setting, Subject, Instructor, Room, Section, Break
+from timetable.utils import auto_generate_schedule, get_duration_in_seconds
 
 # Create your views here.
 
@@ -137,7 +139,14 @@ def edit_setting(request):
 
     raise ValidationError('Nothing to edit!')
 
+def generate_schedule(request):
+    auto_generate_schedule()
+    return redirect(reverse('index'))
 
+class ScheduleListView(ListView):
+    model = Schedule
+    paginate_by = 10
+    
 class GradeListView(ListView):
     model = Grade
     paginate_by = 10

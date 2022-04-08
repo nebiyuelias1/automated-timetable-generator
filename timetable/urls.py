@@ -1,12 +1,12 @@
 from unicodedata import name
 from django.urls import path
-from timetable.views import (GradeCreateView, GradeDeleteView, GradeListView, GradeUpdateView, SubjectCreateView, SubjectDeleteView, SubjectListView, SubjectUpdateView,
+from timetable.views import (GradeCreateView, GradeDeleteView, GradeListView, GradeUpdateView, ScheduleListView, SubjectCreateView, SubjectDeleteView, SubjectListView, SubjectUpdateView,
                              InstructorCreateView, InstructorDeleteView, InstructorListView, InstructorUpdateView, RoomCreateView, RoomDeleteView, RoomListView,
-                             RoomUpdateView, SectionCreateView, SectionDeleteView, SectionListView, SectionUpdateView, edit_setting, index, settings, subjects_in_grade)
+                             RoomUpdateView, SectionCreateView, SectionDeleteView, SectionListView, SectionUpdateView, edit_setting, generate_schedule, index, settings, subjects_in_grade)
 
 
 urlpatterns = [
-    path('', index),
+    path('', index, name='index'),
 
     path('grades/', GradeListView.as_view(), name='grades'),
     path('grades/create/', GradeCreateView.as_view(), name='create_grade'),
@@ -43,5 +43,8 @@ urlpatterns = [
          InstructorUpdateView.as_view(), name='edit-instructor'),
 
     path('settings/', settings, name='settings'),
-    path('settings/edit/', edit_setting, name='edit-setting')
+    path('settings/edit/', edit_setting, name='edit-setting'),
+    
+    path('schedule/generate/', generate_schedule, name='generate-schedule'),
+    path('schedule/view/', ScheduleListView.as_view(), name='schedules')
 ]
