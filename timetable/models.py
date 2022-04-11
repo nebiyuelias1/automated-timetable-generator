@@ -90,6 +90,9 @@ class Schedule(models.Model):
         super().__init__(*args, **kwargs)
         self.__entries = []
         self.__fitness = 1
+        self.__days = []
+        for i in range(1, 6):
+            self.__days.append(DaySchedule(day=i, schedule=self))
     
     @property
     def fitness(self):
@@ -97,10 +100,12 @@ class Schedule(models.Model):
         
 
     def add_schedule_entry(self, day, period, subject):
-        self.__entries.append(ScheduleEntry(
-            schedule=self, day=day, period=period, subject=subject))
+        self.__entries.append(ScheduleEntry(day=self.__days[day-1], period=period, subject=subject))
         
     def save_schedule_entries(self):
+        for day in self.__days:
+            day.save()
+            
         ScheduleEntry.objects.bulk_create(self.__entries)
 
     def calculate_fitness(self):
@@ -109,28 +114,46 @@ class Schedule(models.Model):
             instructor_id = entry.subject.instructors.first().id
 
             instructor_conflict_exists = ScheduleEntry.objects.filter(
-                day=entry.day, period=entry.period, subject__instructors__in=[instructor_id]).exists()
+                day__day=entry.day.day, period=entry.period, subject__instructors__in=[instructor_id]).exists()
             
             if instructor_conflict_exists:
                 num_of_conflicts += 1
                 
         self.__fitness = 1 / (num_of_conflicts + 1)
-                
         
-
+        
+class DaySchedule(models.Model):
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    
+    DAYS_OF_THE_WEEK = (
+        (MONDAY, 'Monday'),
+        (TUESDAY, 'Tuesday'),
+        (WEDNESDAY, 'Wednesday'),
+        (THURSDAY, 'Thursday'),
+        (FRIDAY, 'Friday'),
+    )
+    
+    schedule = models.ForeignKey(
+        Schedule, related_name='days', null=False, blank=False, on_delete=models.CASCADE)
+    
+    day = models.IntegerField(choices=DAYS_OF_THE_WEEK)
 
 class ScheduleEntry(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    day = models.IntegerField()
+    day = models.ForeignKey(DaySchedule, related_name='entries', null=True, blank=True, on_delete=models.CASCADE)
 
     period = models.IntegerField()
 
-    schedule = models.ForeignKey(
-        Schedule, related_name='entries', null=False, blank=False, on_delete=models.CASCADE)
-
     subject = models.ForeignKey(
         Subject, related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
+    
+    def __str__(self) -> str:
+        return f'{self.subject}'
 
 
 class Setting(models.Model):

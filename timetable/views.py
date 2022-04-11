@@ -1,13 +1,14 @@
+from typing import List
 from urllib import response
 from django.forms import ValidationError, formset_factory
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic import ListView
-from requests import Response
+from django.db.models import Count
 from timetable.forms import BreakForm, GradeForm, InstructorForm, SectionForm, SettingForm, SubjectForm
 
-from timetable.models import Grade, Schedule, Setting, Subject, Instructor, Room, Section, Break
+from timetable.models import DaySchedule, Grade, Schedule, ScheduleEntry, Setting, Subject, Instructor, Room, Section, Break
 from timetable.utils import auto_generate_schedule, get_duration_in_seconds
 
 # Create your views here.
@@ -18,7 +19,8 @@ def index(request):
         'subject_count': Subject.objects.count(),
         'room_count': Room.objects.count(),
         'section_count': Section.objects.count(),
-        'instructor_count': Instructor.objects.count()
+        'instructor_count': Instructor.objects.count(),
+        'schedule_count': Schedule.objects.count(),
     }
     return render(request, 'timetable/index.html', context)
 
@@ -67,31 +69,34 @@ def settings(request):
                         break_form.cleaned_data['start_time'], break_form.cleaned_data['end_time'])
 
             period_length = setting_data['period_length'].total_seconds()
-            
+
             before_lunch_number_of_periods = before_lunch_duration / period_length
             if before_lunch_number_of_periods != int(before_lunch_number_of_periods):
                 raise ValidationError(
-            'It\'s not possible to have equally spaced periods with current configuration. Please adjust!', code='invalid')
+                    'It\'s not possible to have equally spaced periods with current configuration. Please adjust!', code='invalid')
             after_lunch_number_of_periods = after_lunch_duration / period_length
             if after_lunch_number_of_periods != int(after_lunch_number_of_periods):
                 raise ValidationError(
-            'It\'s not possible to have equally spaced periods with current configuration. Please adjust!', code='invalid')
-            
+                    'It\'s not possible to have equally spaced periods with current configuration. Please adjust!', code='invalid')
+
             setting = Setting.objects.create(**form.cleaned_data,
                                              before_lunch_period_count=before_lunch_number_of_periods,
                                              after_lunch_period_count=after_lunch_number_of_periods)
             for break_form in break_form_set:
-                Break.objects.create(**break_form.cleaned_data, setting=setting)
-                
+                Break.objects.create(
+                    **break_form.cleaned_data, setting=setting)
+
             return render(request, 'timetable/setting_display.html', {'setting': setting})
 
     form = SettingForm()
     return render(request, 'timetable/setting_form.html', {'form': form, 'break_count': break_count + 1, 'break_form_set': BreakFormSet(), })
 
+
 def subjects_in_grade(request, pk):
     subjects = Subject.objects.filter(grade=pk)
-    
+
     return render(request, 'timetable/subjects_drop_down_list_options.html', {'subjects': subjects})
+
 
 def edit_setting(request):
     setting_queryset = Setting.objects.all()
@@ -139,14 +144,46 @@ def edit_setting(request):
 
     raise ValidationError('Nothing to edit!')
 
+
 def generate_schedule(request):
     auto_generate_schedule()
     return redirect(reverse('index'))
 
+
+def _get_timetable(total_periods, entries: List[ScheduleEntry]):
+    timetable = {i: {j: None for j in range(
+        1, total_periods + 1)} for i in range(1, 6)}
+
+    for entry in entries:
+        day = entry.day.day
+        period = entry.period
+        timetable[day][period] = entry
+
+    return timetable
+
+
+def display_schedule(request, pk):
+    schedule = get_object_or_404(Schedule, pk=pk)
+    setting = Setting.objects.first()
+    total_periods = setting.before_lunch_period_count + \
+        setting.after_lunch_period_count
+
+    schedule_entries = ScheduleEntry.objects.filter(day__schedule=schedule).order_by(
+        'day__day', 'period').select_related('subject')
+    timetable = _get_timetable(
+        total_periods=total_periods, entries=schedule_entries)
+
+    return render(request, 'timetable/schedule_display.html', {'schedule': schedule,
+                                                               'timetable': timetable,
+                                                               'period_range': range(1, total_periods + 1),
+                                                               'day_range': range(1, 6)})
+
+
 class ScheduleListView(ListView):
     model = Schedule
     paginate_by = 10
-    
+
+
 class GradeListView(ListView):
     model = Grade
     paginate_by = 10

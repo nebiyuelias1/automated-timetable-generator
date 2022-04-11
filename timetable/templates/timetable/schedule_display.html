@@ -1,0 +1,29 @@
+{% extends 'timetable/base.html' %}
+{% load index %}
+
+{% block main %}
+
+<h1 class="text-xl font-bold">Schedules: {{schedule.section}}</h1>
+
+<table class="border-collapse border border-slate-400 table-auto">
+    <thead>
+        <tr>
+            <th class="border border-slate-300 font-medium p-4">Monday</th>
+            <th class="border border-slate-300 font-medium p-4">Tuesday</th>
+            <th class="border border-slate-300 font-medium p-4">Wednesday</th>
+            <th class="border border-slate-300 font-medium p-4">Thursday</th>
+            <th class="border border-slate-300 font-medium p-4">Friday</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in period_range %}
+        <tr>
+            {% for d in day_range %}
+            <td class="border border-slate-300 p-4">{{timetable|index:d|index:p}}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock main %}

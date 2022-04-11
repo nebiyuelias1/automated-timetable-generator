@@ -2,7 +2,7 @@ from unicodedata import name
 from django.urls import path
 from timetable.views import (GradeCreateView, GradeDeleteView, GradeListView, GradeUpdateView, ScheduleListView, SubjectCreateView, SubjectDeleteView, SubjectListView, SubjectUpdateView,
                              InstructorCreateView, InstructorDeleteView, InstructorListView, InstructorUpdateView, RoomCreateView, RoomDeleteView, RoomListView,
-                             RoomUpdateView, SectionCreateView, SectionDeleteView, SectionListView, SectionUpdateView, edit_setting, generate_schedule, index, settings, subjects_in_grade)
+                             RoomUpdateView, SectionCreateView, SectionDeleteView, SectionListView, SectionUpdateView, display_schedule, edit_setting, generate_schedule, index, settings, subjects_in_grade)
 
 
 urlpatterns = [
@@ -45,6 +45,7 @@ urlpatterns = [
     path('settings/', settings, name='settings'),
     path('settings/edit/', edit_setting, name='edit-setting'),
     
-    path('schedule/generate/', generate_schedule, name='generate-schedule'),
-    path('schedule/view/', ScheduleListView.as_view(), name='schedules')
+    path('schedules/generate/', generate_schedule, name='generate-schedule'),
+    path('schedules/view/', ScheduleListView.as_view(), name='schedules'),
+    path('schedules/display/<uuid:pk>/', display_schedule, name='display-schedule')
 ]
