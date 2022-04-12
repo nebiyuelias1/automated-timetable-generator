@@ -8,7 +8,6 @@
     Add Section
 </button>
 
-{% for section in object_list %}
 
 <table class="border-collapse border border-slate-400 table-auto">
     <thead>
@@ -21,6 +20,7 @@
         </tr>
     </thead>
     <tbody>
+        {% for section in object_list %}
         <tr>
             <td class="border border-slate-300 p-4">{{section.name}}</td>
             <td class="border border-slate-300 p-4">{{section.grade}}</td>
@@ -32,11 +32,12 @@
                 <a class="text-red-600 hover:underline" href="/sections/delete/{{section.pk}}">Delete</a>
             </td>
         </tr>
+        {% empty %}
+        <div>No sections yet.</div>
+        {% endfor %}
     </tbody>
 </table>
 
-{% empty %}
-    <div>No sections yet.</div>
-{% endfor %}
+
 
 {% endblock main %}

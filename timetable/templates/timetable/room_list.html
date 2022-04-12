@@ -8,7 +8,6 @@
     Add Room
 </button>
 
-{% for room in object_list %}
 
 <table class="border-collapse border border-slate-400 table-auto">
     <thead>
@@ -19,6 +18,7 @@
         </tr>
     </thead>
     <tbody>
+        {% for room in object_list %}
         <tr>
             <td class="border border-slate-300 p-4">{{room.name}}</td>
             <td class="border border-slate-300 p-4">
@@ -28,11 +28,11 @@
                 <a class="text-red-600 hover:underline" href="/rooms/delete/{{room.pk}}">Delete</a>
             </td>
         </tr>
+        {% empty %}
+        <div>No rooms yet.</div>
+        {% endfor %}
     </tbody>
 </table>
 
-{% empty %}
-    <div>No rooms yet.</div>
-{% endfor %}
 
 {% endblock main %}
