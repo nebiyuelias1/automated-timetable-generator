@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List
 from django.forms import ValidationError, formset_factory
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import DeleteView, CreateView, UpdateView
@@ -14,12 +15,17 @@ from timetable.utils import auto_generate_schedule, get_duration_in_seconds
 
 
 def index(request):
+    has_unassigned_instructors = Subject.objects.annotate(instructor_count=Count('instructors')).filter(Q(instructor_count=0)).exists()
+    disable_generate_button = has_unassigned_instructors
+    
     context = {
         'subject_count': Subject.objects.count(),
         'room_count': Room.objects.count(),
         'section_count': Section.objects.count(),
         'instructor_count': Instructor.objects.count(),
         'schedule_count': Schedule.objects.count(),
+        'has_unassigned_instructors': has_unassigned_instructors,
+        'disable_generate_button': disable_generate_button
     }
     return render(request, 'timetable/index.html', context)
 
