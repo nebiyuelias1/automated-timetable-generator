@@ -3,11 +3,12 @@
 
 {% block main %}
 
-<h1 class="text-xl font-bold">Schedules: {{schedule.section}}</h1>
+<h1 class="text-xl font-bold">Schedule for: {{schedule.section}}</h1>
 
 <table class="border-collapse border border-slate-400 table-auto">
     <thead>
         <tr>
+            <th class="border border-slate-300 font-medium p-4"></th>
             <th class="border border-slate-300 font-medium p-4">Monday</th>
             <th class="border border-slate-300 font-medium p-4">Tuesday</th>
             <th class="border border-slate-300 font-medium p-4">Wednesday</th>
@@ -17,9 +18,20 @@
     </thead>
     <tbody>
         {% for p in period_range %}
+        
+        {% if p == setting.before_lunch_period_count|add:1 %}
         <tr>
+            <td align="center" colspan="6" class="border border-slate-300 p-4">Lunch Break ({{setting.lunch_start_time|time}}-{{setting.lunch_end_time|time}})</td>
+        </tr>
+        {% endif %}
+
+        <tr>
+            <td class="border border-slate-300 p-4">{{periods|index:forloop.counter0|index:0|time}}
+                -
+                {{periods|index:forloop.counter0|index:1|time}}
+            </td>
             {% for d in day_range %}
-            <td class="border border-slate-300 p-4">{{timetable|index:d|index:p}}</td>
+            <td class="border border-slate-300 p-4">{{timetable|index:d|index:p|default:""}}</td>
             {% endfor %}
         </tr>
         {% endfor %}

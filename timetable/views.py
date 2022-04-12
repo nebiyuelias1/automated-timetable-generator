@@ -1,14 +1,13 @@
+from datetime import datetime, timedelta
 from typing import List
-from urllib import response
 from django.forms import ValidationError, formset_factory
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic import ListView
-from django.db.models import Count
 from timetable.forms import BreakForm, GradeForm, InstructorForm, SectionForm, SettingForm, SubjectForm
 
-from timetable.models import DaySchedule, Grade, Schedule, ScheduleEntry, Setting, Subject, Instructor, Room, Section, Break
+from timetable.models import Grade, Schedule, ScheduleEntry, Setting, Subject, Instructor, Room, Section, Break
 from timetable.utils import auto_generate_schedule, get_duration_in_seconds
 
 # Create your views here.
@@ -162,6 +161,27 @@ def _get_timetable(total_periods, entries: List[ScheduleEntry]):
     return timetable
 
 
+def _get_periods(setting: Setting):
+    periods = []
+    
+    period_length_in_minutes = setting.period_length.total_seconds() / 60
+
+    start_time_datetime = datetime(2022, 4, 11, setting.start_time.hour, setting.start_time.minute)
+    
+    for i in range(setting.before_lunch_period_count):
+        start_time = start_time_datetime + timedelta(minutes=period_length_in_minutes * i)
+        end_time = start_time + timedelta(minutes=period_length_in_minutes)
+        periods.append([start_time, end_time])
+    
+    start_time_datetime = datetime(2022, 4, 11, setting.lunch_end_time.hour, setting.lunch_end_time.minute)
+    for i in range(setting.after_lunch_period_count):
+        start_time = start_time_datetime + timedelta(minutes=period_length_in_minutes * i)
+        end_time = start_time + timedelta(minutes=period_length_in_minutes)
+        periods.append([start_time, end_time])
+
+    return periods
+
+
 def display_schedule(request, pk):
     schedule = get_object_or_404(Schedule, pk=pk)
     setting = Setting.objects.first()
@@ -172,8 +192,11 @@ def display_schedule(request, pk):
         'day__day', 'period').select_related('subject')
     timetable = _get_timetable(
         total_periods=total_periods, entries=schedule_entries)
+    periods = _get_periods(setting)
 
-    return render(request, 'timetable/schedule_display.html', {'schedule': schedule,
+    return render(request, 'timetable/schedule_display.html', {'setting': setting,
+                                                               'schedule': schedule,
+                                                               'periods': periods,
                                                                'timetable': timetable,
                                                                'period_range': range(1, total_periods + 1),
                                                                'day_range': range(1, 6)})
