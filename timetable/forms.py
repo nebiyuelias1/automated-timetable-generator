@@ -1,10 +1,11 @@
-from mimetypes import init
-from typing import Any, Mapping, Optional
-from django.forms import DurationField, Form, ModelForm, TimeField, TimeInput, ValidationError
+from typing import Any, Dict, Mapping, Optional
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
+from django.forms import DurationField, Form, ModelForm, TimeField, TimeInput
 from durationwidget.widgets import TimeDurationWidget
 
 
-from timetable.models import Break, Grade, Instructor, InstructorAssignment, Section, Subject
+from timetable.models import Break, Grade, Instructor, InstructorAssignment, Section, Setting, Subject
 
 
 class GradeForm(ModelForm):
@@ -35,6 +36,25 @@ class InstructorAssignmentForm(ModelForm):
     class Meta:
         model = InstructorAssignment
         fields = ('subject', 'section', 'instructor')
+        
+    def clean(self) -> Optional[Dict[str, Any]]:
+        setting = Setting.objects.first()
+        period_length = setting.period_length.total_seconds() if setting else 0
+        
+        cleaned_data = super().clean()
+        instructor = cleaned_data.get('instructor')
+        subject = cleaned_data.get('subject')
+        subject_period_length = subject.number_of_occurrences * period_length
+        
+        total_occurrences = InstructorAssignment.objects.filter(instructor=instructor).aggregate(total_occurrences=Coalesce(Sum('subject__number_of_occurrences'), 0))['total_occurrences']
+        total_occurrences = total_occurrences * period_length
+        total_occurrences += subject_period_length
+        
+        instructor_availability = instructor.availability.total_seconds()
+        if total_occurrences > instructor_availability:
+            self.add_error(None, 'More than the instructor\'s availability hours per week.')
+        
+        return cleaned_data
 
 class SectionForm(ModelForm):
     class Meta:
@@ -62,8 +82,8 @@ class BreakForm(ModelForm):
         start_time = cleaned_data.get('start_time')
         end_time = cleaned_data.get('end_time')
         if start_time >= end_time:
-            raise ValidationError(
-                'End time must be after start time.', code='invalid')
+            self.add_error(None, 'End time must be after start time.')
+            
         return cleaned_data
 
 
