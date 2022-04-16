@@ -15,12 +15,11 @@ from timetable.utils import auto_generate_schedule, get_duration_in_seconds
 
 
 def index(request):
-    setting = Setting.objects.first()
-    period_length = setting.period_length if setting else 0
-    period_length = period_length / 60
-
     has_unassigned_instructors = Subject.objects.annotate(
-        instructor_count=Count('instructors')).filter(Q(instructor_count=0)).exists()
+        instructor_assignment_count=Count('instructors'),
+        section_count=Count('grade__sections')
+    ).filter(Q(instructor_assignment_count__lt=F('section_count'))).exists()
+    
     disable_generate_button = has_unassigned_instructors
 
     context = {
