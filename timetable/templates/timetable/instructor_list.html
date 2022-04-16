@@ -15,7 +15,7 @@
             <th class="border border-slate-300 font-medium p-4">Instructor Name</th>
             <th class="border border-slate-300 font-medium p-4">Availability</th>
             <th class="border border-slate-300 font-medium p-4">Flexibility</th>
-            <th class="border border-slate-300 font-medium p-4">Subjects</th>
+            <th class="border border-slate-300 font-medium p-4">Teachings</th>
             <th class="border border-slate-300 font-medium p-4"></th>
         </tr>
     </thead>
@@ -27,8 +27,8 @@
                 <td class="border border-slate-300 p-4">{{instructor.get_flexibility_display}}</td>
                 <td class="border border-slate-300 p-4">
                     <ul>
-                        {% for subject in instructor.subjects.all %}
-                        <li>{{subject}}</li>
+                        {% for assignment in instructor.assignments.all %}
+                        <li>{{assignment.section.name}}: {{assignment.subject}}</li>
                         {% endfor %}
                     </ul>
                 </td>
