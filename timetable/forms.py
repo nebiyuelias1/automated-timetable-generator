@@ -1,9 +1,10 @@
+from mimetypes import init
 from typing import Any, Mapping, Optional
-from django.forms import DurationField, Form, ModelChoiceField, ModelForm, ModelMultipleChoiceField, MultipleChoiceField, TimeField, TimeInput, ValidationError
+from django.forms import DurationField, Form, ModelForm, TimeField, TimeInput, ValidationError
 from durationwidget.widgets import TimeDurationWidget
 
 
-from timetable.models import Break, Grade, Instructor, Section, Subject
+from timetable.models import Break, Grade, Instructor, InstructorAssignment, Section, Subject
 
 
 class GradeForm(ModelForm):
@@ -13,12 +14,10 @@ class GradeForm(ModelForm):
 
 
 class InstructorForm(ModelForm):
-    grade = ModelChoiceField(queryset=Grade.objects.all())
-    subjects = ModelMultipleChoiceField(queryset=Subject.objects.all())
     
     class Meta:
         model = Instructor
-        fields = ('name', 'availability', 'flexibility', 'subjects')
+        fields = ('name', 'availability', 'flexibility')
         widgets = {
             'availability': TimeDurationWidget(
                 show_days=False,
@@ -28,6 +27,14 @@ class InstructorForm(ModelForm):
             ),
         }
 
+class InstructorAssignmentForm(ModelForm):
+    
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        
+    class Meta:
+        model = InstructorAssignment
+        fields = ('subject', 'section', 'instructor')
 
 class SectionForm(ModelForm):
     class Meta:

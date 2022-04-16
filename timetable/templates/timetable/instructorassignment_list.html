@@ -1,0 +1,62 @@
+{% extends 'timetable/base.html' %}
+{% load assignedinstructor %}
+
+{% block main %}
+<h1 class="text-xl font-bold">Instructor Subject Assignments</h1>
+
+<button onclick="location.href = '/instructor-assignments/create'" type="button"
+    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+    Add Instructor Assignment
+</button>
+
+<table class="border-collapse border border-slate-400 table-auto">
+    <thead>
+        <tr>
+            <th class="border border-slate-300 font-medium p-4">Section</th>
+            <th class="border border-slate-300 font-medium p-4">Subject</th>
+            <th class="border border-slate-300 font-medium p-4">Instructor</th>
+            <!-- <th class="border border-slate-300 font-medium p-4"> </th> -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for section in sections %}
+
+        {% for subject in section.grade.subjects.all %}
+        <tr>
+            <td class="border border-slate-300 p-4">{{section}}</td>
+            <td class="border border-slate-300 p-4">{{subject.name}}</td>
+            <td class="border border-slate-300 p-4">
+                {% with instructor_assignment=subject.instructors|assignedinstructor:section %}
+                {% if instructor_assignment %}
+                {{instructor_assignment.instructor}} (<a href="{% url 'instructor-assignments-edit' instructor_assignment.id %}" class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">Change</a>)
+                {% else %}
+                <a class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+                    href="{% url 'instructor-assignments-create'%}?section_id={{section.id}}&subject_id={{subject.id}}">Assign</a>
+                {% endif %}
+                {% endwith %}
+
+            </td>
+        </tr>
+        {% endfor %}
+        <!-- <tr>
+            <td class="border border-slate-300 p-4">{{subject.name}}</td>
+            <td class="border border-slate-300 p-4">{{subject.grade}}</td>
+            <td class="border border-slate-300 p-4">
+                <ul>
+                    {% for ins in subject.instructors.all %}
+                    <li>{{ins}}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+            <td class="border border-slate-300 p-4">
+                <a class="text-blue-600 hover:underline" href="/subjects/edit/{{subject.pk}}">Edit</a>
+            </td>
+            <td class="border border-slate-300 p-4">
+                <a class="text-red-600 hover:underline" href="/subjects/delete/{{subject.pk}}">Delete</a>
+            </td>
+        </tr> -->
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock main %}

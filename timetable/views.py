@@ -1,23 +1,28 @@
 from datetime import datetime, timedelta
-from typing import List
+from typing import Any, Dict, List
 from django.forms import ValidationError, formset_factory
-from django.db.models import Count, Q
+from django.db.models import Count, F, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic import ListView
-from timetable.forms import BreakForm, GradeForm, InstructorForm, SectionForm, SettingForm, SubjectForm
+from timetable.forms import BreakForm, GradeForm, InstructorAssignmentForm, InstructorForm, SectionForm, SettingForm, SubjectForm
 
-from timetable.models import Grade, Schedule, ScheduleEntry, Setting, Subject, Instructor, Room, Section, Break
+from timetable.models import Grade, InstructorAssignment, Schedule, ScheduleEntry, Setting, Subject, Instructor, Room, Section, Break
 from timetable.utils import auto_generate_schedule, get_duration_in_seconds
 
 # Create your views here.
 
 
 def index(request):
-    has_unassigned_instructors = Subject.objects.annotate(instructor_count=Count('instructors')).filter(Q(instructor_count=0)).exists()
+    setting = Setting.objects.first()
+    period_length = setting.period_length if setting else 0
+    period_length = period_length / 60
+
+    has_unassigned_instructors = Subject.objects.annotate(
+        instructor_count=Count('instructors')).filter(Q(instructor_count=0)).exists()
     disable_generate_button = has_unassigned_instructors
-    
+
     context = {
         'subject_count': Subject.objects.count(),
         'room_count': Room.objects.count(),
@@ -169,19 +174,23 @@ def _get_timetable(total_periods, entries: List[ScheduleEntry]):
 
 def _get_periods(setting: Setting):
     periods = []
-    
+
     period_length_in_minutes = setting.period_length.total_seconds() / 60
 
-    start_time_datetime = datetime(2022, 4, 11, setting.start_time.hour, setting.start_time.minute)
-    
+    start_time_datetime = datetime(
+        2022, 4, 11, setting.start_time.hour, setting.start_time.minute)
+
     for i in range(setting.before_lunch_period_count):
-        start_time = start_time_datetime + timedelta(minutes=period_length_in_minutes * i)
+        start_time = start_time_datetime + \
+            timedelta(minutes=period_length_in_minutes * i)
         end_time = start_time + timedelta(minutes=period_length_in_minutes)
         periods.append([start_time, end_time])
-    
-    start_time_datetime = datetime(2022, 4, 11, setting.lunch_end_time.hour, setting.lunch_end_time.minute)
+
+    start_time_datetime = datetime(
+        2022, 4, 11, setting.lunch_end_time.hour, setting.lunch_end_time.minute)
     for i in range(setting.after_lunch_period_count):
-        start_time = start_time_datetime + timedelta(minutes=period_length_in_minutes * i)
+        start_time = start_time_datetime + \
+            timedelta(minutes=period_length_in_minutes * i)
         end_time = start_time + timedelta(minutes=period_length_in_minutes)
         periods.append([start_time, end_time])
 
@@ -346,3 +355,39 @@ class InstructorUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse('instructors')
+
+
+def instructor_assignment_list_view(request):
+    context = {
+        'sections': Section.objects.all()
+    }
+    
+    return render(request, 'timetable/instructorassignment_list.html', context=context)
+
+class InstructorAssignmentCreateView(CreateView):
+    model = InstructorAssignment
+    form_class = InstructorAssignmentForm
+
+    def get_success_url(self):
+        return reverse('instructor-assignments')
+    
+    def get_initial(self) -> Dict[str, Any]:
+        initial = super().get_initial()
+        
+        section_id = self.request.GET.get('section_id')
+        subject_id = self.request.GET.get('subject_id')
+        section = get_object_or_404(Section, pk=section_id)
+        subject = get_object_or_404(Subject, pk=subject_id)
+        
+        initial['subject'] = subject
+        initial['section'] = section
+        
+        return initial
+    
+
+class InstructorAssignmentUpdateView(UpdateView):
+    model = InstructorAssignment
+    form_class = InstructorAssignmentForm
+
+    def get_success_url(self):
+        return reverse('instructor-assignments')

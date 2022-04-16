@@ -1,8 +1,8 @@
 from unicodedata import name
 from django.urls import path
-from timetable.views import (GradeCreateView, GradeDeleteView, GradeListView, GradeUpdateView, ScheduleListView, SubjectCreateView, SubjectDeleteView, SubjectListView, SubjectUpdateView,
+from timetable.views import (GradeCreateView, GradeDeleteView, GradeListView, GradeUpdateView, InstructorAssignmentCreateView, InstructorAssignmentUpdateView, ScheduleListView, SubjectCreateView, SubjectDeleteView, SubjectListView, SubjectUpdateView,
                              InstructorCreateView, InstructorDeleteView, InstructorListView, InstructorUpdateView, RoomCreateView, RoomDeleteView, RoomListView,
-                             RoomUpdateView, SectionCreateView, SectionDeleteView, SectionListView, SectionUpdateView, display_schedule, edit_setting, generate_schedule, index, settings, subjects_in_grade)
+                             RoomUpdateView, SectionCreateView, SectionDeleteView, SectionListView, SectionUpdateView, display_schedule, edit_setting, generate_schedule, index, instructor_assignment_list_view, settings, subjects_in_grade)
 
 
 urlpatterns = [
@@ -47,5 +47,9 @@ urlpatterns = [
     
     path('schedules/generate/', generate_schedule, name='generate-schedule'),
     path('schedules/view/', ScheduleListView.as_view(), name='schedules'),
-    path('schedules/display/<uuid:pk>/', display_schedule, name='display-schedule')
+    path('schedules/display/<uuid:pk>/', display_schedule, name='display-schedule'),
+    
+    path('instructor-assignments/', instructor_assignment_list_view, name='instructor-assignments'),
+    path('instructor-assignments/create/', InstructorAssignmentCreateView.as_view(), name='instructor-assignments-create'),
+    path('instructor-assignments/edit/<uuid:pk>/', InstructorAssignmentUpdateView.as_view(), name='instructor-assignments-edit'),
 ]
