@@ -89,7 +89,7 @@ def auto_generate_schedule():
         while True:
             population = _natural_selection(population)
             
-            found_solution = True in (i.fitness > 0.1 for i in population)
+            found_solution = True in (i.fitness > 0.5 for i in population)
             
             if found_solution:
                 break
