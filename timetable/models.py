@@ -118,6 +118,13 @@ class Schedule(models.Model):
             day.save()
 
         ScheduleEntry.objects.bulk_create(self.__entries)
+        
+    def swap_day_schedule(self, day_one, day_two):
+        temp = self.__days[day_one - 1]
+        self.__days[day_one - 1].day = day_two
+        self.__days[day_one - 1] = self.__days[day_two - 1]
+        self.__days[day_two - 1] = temp
+        self.__days[day_two - 1].day = day_one
 
     def calculate_fitness(self):
         num_of_conflicts = 0
