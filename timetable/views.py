@@ -19,8 +19,9 @@ def index(request):
         instructor_assignment_count=Count('instructors'),
         section_count=Count('grade__sections')
     ).filter(Q(instructor_assignment_count__lt=F('section_count'))).exists()
+    is_setting_defined = Setting.objects.count() > 0
     
-    disable_generate_button = has_unassigned_instructors
+    disable_generate_button = has_unassigned_instructors or (not is_setting_defined)
 
     context = {
         'subject_count': Subject.objects.count(),

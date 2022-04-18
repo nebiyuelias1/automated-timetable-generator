@@ -1,3 +1,4 @@
+from random import randint
 import uuid
 from django.db import models
 
@@ -132,17 +133,28 @@ class Schedule(models.Model):
             instructor = entry.subject.instructors.filter(section=entry.day.schedule.section).first().instructor
 
             instructor_conflict_exists = ScheduleEntry.objects.filter(
-                day__day=entry.day.day, period=entry.period, subject__instructors__in=[instructor.id]).exists()
+                day__day=entry.day.day, period=entry.period, subject__instructors__instructor__in=[instructor.id]).exists()
             
             if instructor_conflict_exists:
                 num_of_conflicts += 1
                 
-            if instructor.availability == Instructor.MORNING and entry.timing == ScheduleEntry.AFTER_NOON:
-                num_of_conflicts += 1
-            elif instructor.availability == Instructor.AFTERNOON and entry.timing == ScheduleEntry.BEFORE_NOON:
-                num_of_conflicts += 1
+            if instructor.flexibility == Instructor.MORNING and entry.timing == ScheduleEntry.AFTER_NOON:
+                num_of_conflicts += 0.01
+            elif instructor.flexibility == Instructor.AFTERNOON and entry.timing == ScheduleEntry.BEFORE_NOON:
+                num_of_conflicts += 0.01
 
         self.__fitness = 1 / (num_of_conflicts + 1)
+        
+    def mutate(self):
+        random_index = randint(1, len(self.__entries)-1)
+        temp_day = self.__entries[random_index].day
+        temp_period = self.__entries[random_index].period
+        
+        self.__entries[random_index].day = self.__entries[random_index - 1].day
+        self.__entries[random_index].period = self.__entries[random_index - 1].period
+        
+        self.__entries[random_index - 1].day = temp_day
+        self.__entries[random_index - 1].period = temp_period
 
 
 class DaySchedule(models.Model):

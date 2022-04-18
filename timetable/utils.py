@@ -31,6 +31,7 @@ def _initialize_population(section: Section, before_lunch_period_count, after_lu
                     1, before_lunch_period_count + after_lunch_period_count)
                 if rand_period in period_allocation_map[rand_day]:
                     continue
+                
                 timing = ScheduleEntry.AFTER_NOON if rand_period > before_lunch_period_count else ScheduleEntry.BEFORE_NOON
 
                 schedule.add_schedule_entry(
@@ -67,9 +68,13 @@ def _create_next_generation(mating_pool):
         else:
             child = parent_b
 
-        if random.random() <= settings.CROSSOVER_RATE:
-            child = _cross_over(child)
+        # if random.random() <= settings.CROSSOVER_RATE:
+        #     child = _cross_over(child)
+            
+        # if random.random() <= settings.MUTATION_RATE:
+        #     child.mutate()
 
+        child.calculate_fitness()
         next_generation.append(child)
 
     return next_generation
@@ -106,7 +111,7 @@ def auto_generate_schedule():
         while True:
             population = _natural_selection(population)
 
-            found_solution = True in (i.fitness > 0.5 for i in population)
+            found_solution = True in (i.fitness > 0.1 for i in population)
 
             if found_solution:
                 break
