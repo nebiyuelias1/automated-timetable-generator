@@ -3,7 +3,6 @@
 {% block main %}
 <h1 class="text-xl font-bold">Schedules</h1>
 
-{% for schedule in object_list %}
 
 <table class="border-collapse border border-slate-400 table-auto">
     <thead>
@@ -14,6 +13,7 @@
         </tr>
     </thead>
     <tbody>
+        {% for schedule in object_list %}
         <tr>
             <td class="border border-slate-300 p-4">{{schedule.section}}</td>
             <td class="border border-slate-300 p-4">
@@ -22,11 +22,10 @@
             <td class="border border-slate-300 p-4">
             </td>
         </tr>
+        {% empty %}
+        <div>No schedules yet.</div>
+        {% endfor %}
+
+        {% endblock main %}
     </tbody>
 </table>
-
-{% empty %}
-    <div>No schedules yet.</div>
-{% endfor %}
-
-{% endblock main %}

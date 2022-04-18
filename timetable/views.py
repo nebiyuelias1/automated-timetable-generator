@@ -155,8 +155,9 @@ def edit_setting(request):
 
 
 def generate_schedule(request):
+    Schedule.objects.all().delete()
     auto_generate_schedule()
-    return redirect(reverse('index'))
+    return render(request, 'timetable/index.html', context={'schedule_generated_successfully': True})
 
 
 def _get_timetable(total_periods, entries: List[ScheduleEntry]):

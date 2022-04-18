@@ -109,9 +109,9 @@ class Schedule(models.Model):
     def fitness(self):
         return self.__fitness
 
-    def add_schedule_entry(self, day, period, subject):
+    def add_schedule_entry(self, day, period, subject, timing):
         self.__entries.append(ScheduleEntry(
-            day=self.__days[day-1], period=period, subject=subject))
+            day=self.__days[day-1], period=period, subject=subject, timing=timing))
 
     def save_schedule_entries(self):
         for day in self.__days:
@@ -122,12 +122,17 @@ class Schedule(models.Model):
     def calculate_fitness(self):
         num_of_conflicts = 0
         for entry in self.__entries:
-            instructor_id = entry.subject.instructors.first().id
+            instructor = entry.subject.instructors.filter(section=entry.day.schedule.section).first().instructor
 
             instructor_conflict_exists = ScheduleEntry.objects.filter(
-                day__day=entry.day.day, period=entry.period, subject__instructors__in=[instructor_id]).exists()
-
+                day__day=entry.day.day, period=entry.period, subject__instructors__in=[instructor.id]).exists()
+            
             if instructor_conflict_exists:
+                num_of_conflicts += 1
+                
+            if instructor.availability == Instructor.MORNING and entry.timing == ScheduleEntry.AFTER_NOON:
+                num_of_conflicts += 1
+            elif instructor.availability == Instructor.AFTERNOON and entry.timing == ScheduleEntry.BEFORE_NOON:
                 num_of_conflicts += 1
 
         self.__fitness = 1 / (num_of_conflicts + 1)
@@ -155,6 +160,14 @@ class DaySchedule(models.Model):
 
 
 class ScheduleEntry(models.Model):
+    BEFORE_NOON = 'BF'
+    AFTER_NOON = 'AF'
+    
+    TIMING_OPTIONS = (
+        (BEFORE_NOON, 'Before Noon'),
+        (AFTER_NOON, 'AFTER_NOON'),
+    )
+    
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     day = models.ForeignKey(DaySchedule, related_name='entries',
@@ -164,6 +177,8 @@ class ScheduleEntry(models.Model):
 
     subject = models.ForeignKey(
         Subject, related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
+    
+    timing = models.CharField(choices=TIMING_OPTIONS, default=None, null=True, blank=True, max_length=2)
 
     def __str__(self) -> str:
         return f'{self.subject}'

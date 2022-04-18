@@ -77,6 +77,21 @@
 </div>
 {% endif %}
 
+{% if schedule_generated_successfully %}
+<div class="mt-4 text-white px-6 py-4 border-0 rounded relative mb-4 bg-emerald-500">
+    <span class="text-xl inline-block mr-5 align-middle">
+        <i class="fas fa-bell" />
+    </span>
+    <span class="inline-block align-middle mr-8">
+        <b class="capitalize">Success:</b> Schedule generated successfully!
+    </span>
+    <a href="{% url 'schedules' %}"
+        class="cursor-pointer absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none">
+        <span>View</span>
+    </a>
+</div>
+{% endif %}
+
 {% if has_unassigned_instructors %}
 <div
     class="mt-5 flex justify-center items-center m-1 font-medium py-1 px-2 rounded-md text-red-700 bg-red-100 border border-red-300 ">

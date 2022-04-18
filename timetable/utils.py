@@ -30,7 +30,9 @@ def _initialize_population(section: Section, before_lunch_period_count, after_lu
                 rand_period = random.randint(1, before_lunch_period_count + after_lunch_period_count)
                 if rand_period in period_allocation_map[rand_day]:
                     continue
-                schedule.add_schedule_entry(day=rand_day, period=rand_period, subject=subject)
+                timing = ScheduleEntry.AFTER_NOON if rand_period > before_lunch_period_count else ScheduleEntry.BEFORE_NOON
+                
+                schedule.add_schedule_entry(day=rand_day, period=rand_period, subject=subject, timing=timing)
                 number_of_occurrences -= 1
                 period_allocation_map[rand_day].add(rand_period)
         
